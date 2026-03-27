@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WakaWakaHeyHey - Live IPL Scores</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
+    }
+
+    header {
+      background: #ff6f00;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .match {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .teams {
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      font-weight: bold;
+      color: red;
+    }
+
+    .news {
+      margin-top: 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  🏏 WakaWakaHeyHey - Live IPL Scores
+</header>
+
+<div class="container">
+
+  <!-- LIVE MATCH -->
+  <div class="match">
+    <div class="status">LIVE</div>
+    <div class="teams">
+      <span>CSK - 178/4 (18.2)</span>
+      <span>MI - 150/6 (17.0)</span>
+    </div>
+    <div>CSK leading by 28 runs</div>
+  </div>
+
+  <!-- UPCOMING MATCH -->
+  <div class="match">
+    <div class="status" style="color: green;">UPCOMING</div>
+    <div class="teams">
+      <span>RCB</span>
+      <span>KKR</span>
+    </div>
+    <div>Starts at 7:30 PM IST</div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="news">
+    <h3>🔥 Match News</h3>
+    <p>Dhoni finishes strong! CSK dominating the final overs.</p>
+    <p>RCB vs KKR expected to be a thriller tonight.</p>
+  </div>
+
+</div>
+
+</body>
+</html>
