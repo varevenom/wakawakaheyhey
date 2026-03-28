@@ -5,17 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WakaWakaHeyHey Sports Live</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(180deg, #020617, #0f172a 55%, #111827);
       color: white;
     }
-
     .topbar {
       padding: 24px 18px;
       text-align: center;
@@ -26,25 +22,21 @@
       backdrop-filter: blur(8px);
       z-index: 10;
     }
-
     h1 {
       margin: 0;
       color: #22c55e;
       font-size: 38px;
     }
-
     .subtitle {
       color: #94a3b8;
       margin-top: 8px;
       font-size: 15px;
     }
-
     .container {
       width: 92%;
       max-width: 1000px;
       margin: 28px auto 40px;
     }
-
     .league {
       font-size: 26px;
       color: #38bdf8;
@@ -52,12 +44,10 @@
       margin: 28px 0 14px;
       text-align: center;
     }
-
     .grid {
       display: grid;
       gap: 16px;
     }
-
     .card {
       background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255,255,255,0.06);
@@ -65,25 +55,21 @@
       padding: 18px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.28);
     }
-
     .match-title {
       font-size: 21px;
       font-weight: bold;
       margin-bottom: 10px;
       color: #f8fafc;
     }
-
     .score {
       font-size: 18px;
       color: #facc15;
       margin-bottom: 8px;
     }
-
     .status {
       color: #cbd5e1;
       font-size: 15px;
     }
-
     .tag {
       display: inline-block;
       margin-bottom: 10px;
@@ -94,7 +80,6 @@
       background: rgba(255,255,255,0.08);
       color: #93c5fd;
     }
-
     .ad-box {
       margin-top: 24px;
       padding: 18px;
@@ -104,48 +89,25 @@
       color: #94a3b8;
       background: rgba(255,255,255,0.02);
     }
-
     .footer {
       text-align: center;
       color: #64748b;
       padding: 28px 16px 36px;
       font-size: 14px;
     }
-
     .loading {
       text-align: center;
       color: #cbd5e1;
     }
-
     .small {
       font-size: 13px;
       color: #94a3b8;
       margin-top: 6px;
     }
-
-    .pill {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: bold;
-      margin-right: 8px;
-      background: rgba(34, 197, 94, 0.18);
-      color: #86efac;
-    }
-
     @media (max-width: 700px) {
-      h1 {
-        font-size: 30px;
-      }
-
-      .league {
-        font-size: 22px;
-      }
-
-      .match-title {
-        font-size: 18px;
-      }
+      h1 { font-size: 30px; }
+      .league { font-size: 22px; }
+      .match-title { font-size: 18px; }
     }
   </style>
 </head>
@@ -166,14 +128,10 @@
       <div class="card loading">Loading cricket matches...</div>
     </div>
 
-    <div class="ad-box">
-      Advertisement space ready 💸
-    </div>
+    <div class="ad-box">Advertisement space ready 💸</div>
   </div>
 
-  <div class="footer">
-    WakaWakaHeyHey • live sports hub
-  </div>
+  <div class="footer">WakaWakaHeyHey • live sports hub</div>
 
   <script>
     async function loadFootball() {
@@ -186,34 +144,57 @@
 
         container.innerHTML = "";
 
-        if (data.response && data.response.length > 0) {
-          data.response.slice(0, 8).forEach(match => {
-            const home = match.teams?.home?.name || "Home";
-            const away = match.teams?.away?.name || "Away";
-            const league = match.league?.name || "League";
-            const date = match.fixture?.date
-              ? new Date(match.fixture.date).toLocaleString()
-              : "Time not available";
+        const matches =
+          data.response ||
+          data.data ||
+          data.matches ||
+          data.result ||
+          [];
 
-            const div = document.createElement("div");
-            div.className = "card";
-            div.innerHTML = `
-              <div class="tag">${league}</div>
-              <div class="match-title">${home} vs ${away}</div>
-              <div class="status">${date}</div>
-              <div class="small">Upcoming football match ⚽</div>
-            `;
-            container.appendChild(div);
-          });
-        } else {
+        if (!Array.isArray(matches) || matches.length === 0) {
           container.innerHTML = `
             <div class="card">
               <div class="tag">Football</div>
-              <div class="match-title">No football matches available right now</div>
-              <div class="status">Check back soon ⚽</div>
+              <div class="match-title">No football matches found</div>
+              <div class="status">API responded but returned no matches.</div>
             </div>
           `;
+          return;
         }
+
+        matches.slice(0, 8).forEach(match => {
+          const home =
+            match.home_name ||
+            match.homeTeam?.name ||
+            match.team1?.name ||
+            "Home";
+          const away =
+            match.away_name ||
+            match.awayTeam?.name ||
+            match.team2?.name ||
+            "Away";
+          const score =
+            match.score ||
+            `${match.homeScore ?? "-"} - ${match.awayScore ?? "-"}`;
+          const league =
+            match.league_name ||
+            match.league ||
+            "Football";
+          const status =
+            match.status ||
+            match.match_status ||
+            "Match";
+
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <div class="tag">${league}</div>
+            <div class="match-title">${home} vs ${away}</div>
+            <div class="score">${score}</div>
+            <div class="status">${status}</div>
+          `;
+          container.appendChild(div);
+        });
       } catch (err) {
         console.error("Football API error:", err);
         container.innerHTML = `
@@ -234,27 +215,18 @@
       const team2 = info.team2?.teamName || "Team 2";
 
       const t1s1 = score.team1Score?.inngs1;
-      const t1s2 = score.team1Score?.inngs2;
       const t2s1 = score.team2Score?.inngs1;
-      const t2s2 = score.team2Score?.inngs2;
 
-      const team1Score = [
-        t1s1 ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})` : "",
-        t1s2 ? `${t1s2.runs}/${t1s2.wickets} (${t1s2.overs})` : ""
-      ].filter(Boolean).join(" & ");
-
-      const team2Score = [
-        t2s1 ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})` : "",
-        t2s2 ? `${t2s2.runs}/${t2s2.wickets} (${t2s2.overs})` : ""
-      ].filter(Boolean).join(" & ");
+      const team1Score = t1s1 ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})` : "Score not available";
+      const team2Score = t2s1 ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})` : "Score not available";
 
       return `
         <div class="card">
           <div class="tag">${info.matchFormat || "Cricket"}</div>
           <div class="match-title">${team1} vs ${team2}</div>
-          <div class="score">${team1}: ${team1Score || "Score not available"}</div>
-          <div class="score">${team2}: ${team2Score || "Score not available"}</div>
-          <div class="status"><span class="pill">MATCH</span>${info.status || info.state || "Recent / Upcoming"}</div>
+          <div class="score">${team1}: ${team1Score}</div>
+          <div class="score">${team2}: ${team2Score}</div>
+          <div class="status">${info.status || info.state || "Recent / Upcoming"}</div>
           <div class="small">${info.seriesName || ""}</div>
         </div>
       `;
@@ -285,13 +257,7 @@
           .flatMap(type => type.seriesMatches || [])
           .flatMap(series => (series.seriesAdWrapper && series.seriesAdWrapper.matches) ? series.seriesAdWrapper.matches : []);
 
-        const iplMatches = allMatches.filter(match => {
-          const info = match.matchInfo || {};
-          const text = `${info.seriesName || ""} ${info.team1?.teamName || ""} ${info.team2?.teamName || ""} ${info.status || ""}`.toLowerCase();
-          return text.includes("ipl");
-        });
-
-        const matchesToShow = (iplMatches.length > 0 ? iplMatches : allMatches).slice(0, 8);
+        const matchesToShow = allMatches.slice(0, 8);
 
         if (matchesToShow.length === 0) {
           container.innerHTML = `
