@@ -123,6 +123,17 @@
       margin-top: 6px;
     }
 
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 8px;
+      background: rgba(34, 197, 94, 0.18);
+      color: #86efac;
+    }
+
     @media (max-width: 700px) {
       h1 {
         font-size: 30px;
@@ -145,12 +156,12 @@
   </div>
 
   <div class="container">
-    <div class="league">⚽ Football Live</div>
+    <div class="league">⚽ Football Matches</div>
     <div id="football" class="grid">
       <div class="card loading">Loading football matches...</div>
     </div>
 
-    <div class="league">🏏 IPL / Cricket Live</div>
+    <div class="league">🏏 IPL / Cricket Matches</div>
     <div id="cricket" class="grid">
       <div class="card loading">Loading cricket matches...</div>
     </div>
@@ -165,55 +176,44 @@
   </div>
 
   <script>
-    const FOOTBALL_API_KEY = "2462e59935mshe59f5a9e55b0a81p1ce4b7jsn17169f4c8120";
-    const CRICKET_API_KEY = "2462e59935mshe59f5a9e55b0a81p1ce4b7jsn17169f4c8120";
-
     async function loadFootball() {
       const container = document.getElementById("football");
       container.innerHTML = `<div class="card loading">Loading football matches...</div>`;
 
       try {
-        const res = await fetch("https://api-football-v1.p.rapidapi.com/v3/fixtures?live=all", {
-          method: "GET",
-          headers: {
-            "X-RapidAPI-Key": FOOTBALL_API_KEY,
-            "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
-          }
-        });
-
+        const res = await fetch("/api/football");
         const data = await res.json();
+
         container.innerHTML = "";
 
-        if (!data.response || data.response.length === 0) {
+        if (data.response && data.response.length > 0) {
+          data.response.slice(0, 8).forEach(match => {
+            const home = match.teams?.home?.name || "Home";
+            const away = match.teams?.away?.name || "Away";
+            const league = match.league?.name || "League";
+            const date = match.fixture?.date
+              ? new Date(match.fixture.date).toLocaleString()
+              : "Time not available";
+
+            const div = document.createElement("div");
+            div.className = "card";
+            div.innerHTML = `
+              <div class="tag">${league}</div>
+              <div class="match-title">${home} vs ${away}</div>
+              <div class="status">${date}</div>
+              <div class="small">Upcoming football match ⚽</div>
+            `;
+            container.appendChild(div);
+          });
+        } else {
           container.innerHTML = `
             <div class="card">
               <div class="tag">Football</div>
-              <div class="match-title">No live football matches right now</div>
+              <div class="match-title">No football matches available right now</div>
               <div class="status">Check back soon ⚽</div>
             </div>
           `;
-          return;
         }
-
-        data.response.slice(0, 8).forEach(match => {
-          const home = match.teams?.home?.name || "Home";
-          const away = match.teams?.away?.name || "Away";
-          const homeGoals = match.goals?.home ?? "-";
-          const awayGoals = match.goals?.away ?? "-";
-          const league = match.league?.name || "League";
-          const elapsed = match.fixture?.status?.elapsed ?? 0;
-          const status = match.fixture?.status?.short || "LIVE";
-
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <div class="tag">${league}</div>
-            <div class="match-title">${home} vs ${away}</div>
-            <div class="score">${homeGoals} - ${awayGoals}</div>
-            <div class="status">${status} • ${elapsed}'</div>
-          `;
-          container.appendChild(div);
-        });
       } catch (err) {
         console.error("Football API error:", err);
         container.innerHTML = `
@@ -226,27 +226,55 @@
       }
     }
 
+    function renderCricketMatch(match) {
+      const info = match.matchInfo || {};
+      const score = match.matchScore || {};
+
+      const team1 = info.team1?.teamName || "Team 1";
+      const team2 = info.team2?.teamName || "Team 2";
+
+      const t1s1 = score.team1Score?.inngs1;
+      const t1s2 = score.team1Score?.inngs2;
+      const t2s1 = score.team2Score?.inngs1;
+      const t2s2 = score.team2Score?.inngs2;
+
+      const team1Score = [
+        t1s1 ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})` : "",
+        t1s2 ? `${t1s2.runs}/${t1s2.wickets} (${t1s2.overs})` : ""
+      ].filter(Boolean).join(" & ");
+
+      const team2Score = [
+        t2s1 ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})` : "",
+        t2s2 ? `${t2s2.runs}/${t2s2.wickets} (${t2s2.overs})` : ""
+      ].filter(Boolean).join(" & ");
+
+      return `
+        <div class="card">
+          <div class="tag">${info.matchFormat || "Cricket"}</div>
+          <div class="match-title">${team1} vs ${team2}</div>
+          <div class="score">${team1}: ${team1Score || "Score not available"}</div>
+          <div class="score">${team2}: ${team2Score || "Score not available"}</div>
+          <div class="status"><span class="pill">MATCH</span>${info.status || info.state || "Recent / Upcoming"}</div>
+          <div class="small">${info.seriesName || ""}</div>
+        </div>
+      `;
+    }
+
     async function loadCricket() {
       const container = document.getElementById("cricket");
       container.innerHTML = `<div class="card loading">Loading cricket matches...</div>`;
 
       try {
-        const res = await fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
-          method: "GET",
-          headers: {
-            "X-RapidAPI-Key": CRICKET_API_KEY,
-            "X-RapidAPI-Host": "cricbuzz-cricket.p.rapidapi.com"
-          }
-        });
-
+        const res = await fetch("/api/cricket");
         const data = await res.json();
+
         container.innerHTML = "";
 
         if (!data.typeMatches || data.typeMatches.length === 0) {
           container.innerHTML = `
             <div class="card">
               <div class="tag">Cricket</div>
-              <div class="match-title">No live cricket matches right now</div>
+              <div class="match-title">No cricket data available right now</div>
               <div class="status">Check back soon 🏏</div>
             </div>
           `;
@@ -257,64 +285,34 @@
           .flatMap(type => type.seriesMatches || [])
           .flatMap(series => (series.seriesAdWrapper && series.seriesAdWrapper.matches) ? series.seriesAdWrapper.matches : []);
 
-        const liveMatches = allMatches.filter(match => {
+        const iplMatches = allMatches.filter(match => {
           const info = match.matchInfo || {};
-          return info.state === "In Progress" || info.state === "Complete" || info.status;
+          const text = `${info.seriesName || ""} ${info.team1?.teamName || ""} ${info.team2?.teamName || ""} ${info.status || ""}`.toLowerCase();
+          return text.includes("ipl");
         });
 
-        const matchesToShow = liveMatches.slice(0, 8);
+        const matchesToShow = (iplMatches.length > 0 ? iplMatches : allMatches).slice(0, 8);
 
         if (matchesToShow.length === 0) {
           container.innerHTML = `
             <div class="card">
               <div class="tag">Cricket</div>
-              <div class="match-title">No live cricket matches right now</div>
-              <div class="status">The API responded, but no in-progress matches were found.</div>
+              <div class="match-title">No cricket matches right now</div>
+              <div class="status">The API responded, but no matches were found.</div>
             </div>
           `;
           return;
         }
 
         matchesToShow.forEach(match => {
-          const info = match.matchInfo || {};
-          const score = match.matchScore || {};
-
-          const team1 = info.team1?.teamName || "Team 1";
-          const team2 = info.team2?.teamName || "Team 2";
-
-          const t1s1 = score.team1Score?.inngs1;
-          const t1s2 = score.team1Score?.inngs2;
-          const t2s1 = score.team2Score?.inngs1;
-          const t2s2 = score.team2Score?.inngs2;
-
-          const team1Score = [
-            t1s1 ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})` : "",
-            t1s2 ? `${t1s2.runs}/${t1s2.wickets} (${t1s2.overs})` : ""
-          ].filter(Boolean).join(" & ");
-
-          const team2Score = [
-            t2s1 ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})` : "",
-            t2s2 ? `${t2s2.runs}/${t2s2.wickets} (${t2s2.overs})` : ""
-          ].filter(Boolean).join(" & ");
-
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <div class="tag">${info.matchFormat || "Cricket"}</div>
-            <div class="match-title">${team1} vs ${team2}</div>
-            <div class="score">${team1}: ${team1Score || "Score not available"}</div>
-            <div class="score">${team2}: ${team2Score || "Score not available"}</div>
-            <div class="status">${info.status || info.state || "Live"}</div>
-            <div class="small">${info.seriesName || ""}</div>
-          `;
-          container.appendChild(div);
+          container.innerHTML += renderCricketMatch(match);
         });
       } catch (err) {
         console.error("Cricket API error:", err);
         container.innerHTML = `
           <div class="card">
             <div class="tag">Cricket</div>
-            <div class="match-title">Could not load live cricket</div>
+            <div class="match-title">Could not load cricket matches</div>
             <div class="status">API error or rate limit hit. Try again in a bit.</div>
           </div>
         `;
