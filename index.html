@@ -6,12 +6,14 @@
   <title>WakaWakaHeyHey Sports Live</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(180deg, #020617, #0f172a 55%, #111827);
       color: white;
     }
+
     .topbar {
       padding: 24px 18px;
       text-align: center;
@@ -22,21 +24,25 @@
       backdrop-filter: blur(8px);
       z-index: 10;
     }
+
     h1 {
       margin: 0;
       color: #22c55e;
       font-size: 38px;
     }
+
     .subtitle {
       color: #94a3b8;
       margin-top: 8px;
       font-size: 15px;
     }
+
     .container {
       width: 92%;
       max-width: 1000px;
       margin: 28px auto 40px;
     }
+
     .league {
       font-size: 26px;
       color: #38bdf8;
@@ -44,10 +50,12 @@
       margin: 28px 0 14px;
       text-align: center;
     }
+
     .grid {
       display: grid;
       gap: 16px;
     }
+
     .card {
       background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255,255,255,0.06);
@@ -55,21 +63,25 @@
       padding: 18px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.28);
     }
+
     .match-title {
       font-size: 21px;
       font-weight: bold;
       margin-bottom: 10px;
       color: #f8fafc;
     }
+
     .score {
       font-size: 18px;
       color: #facc15;
       margin-bottom: 8px;
     }
+
     .status {
       color: #cbd5e1;
       font-size: 15px;
     }
+
     .tag {
       display: inline-block;
       margin-bottom: 10px;
@@ -80,6 +92,7 @@
       background: rgba(255,255,255,0.08);
       color: #93c5fd;
     }
+
     .ad-box {
       margin-top: 24px;
       padding: 18px;
@@ -89,21 +102,36 @@
       color: #94a3b8;
       background: rgba(255,255,255,0.02);
     }
+
     .footer {
       text-align: center;
       color: #64748b;
       padding: 28px 16px 36px;
       font-size: 14px;
     }
+
     .loading {
       text-align: center;
       color: #cbd5e1;
     }
+
     .small {
       font-size: 13px;
       color: #94a3b8;
       margin-top: 6px;
     }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 8px;
+      background: rgba(34, 197, 94, 0.18);
+      color: #86efac;
+    }
+
     @media (max-width: 700px) {
       h1 { font-size: 30px; }
       .league { font-size: 22px; }
@@ -118,14 +146,14 @@
   </div>
 
   <div class="container">
-    <div class="league">⚽ Football Matches</div>
+    <div class="league">⚽ Football</div>
     <div id="football" class="grid">
-      <div class="card loading">Loading football matches...</div>
+      <div class="card loading">Loading football data...</div>
     </div>
 
-    <div class="league">🏏 IPL / Cricket Matches</div>
+    <div class="league">🏏 Cricket</div>
     <div id="cricket" class="grid">
-      <div class="card loading">Loading cricket matches...</div>
+      <div class="card loading">Loading cricket data...</div>
     </div>
 
     <div class="ad-box">Advertisement space ready 💸</div>
@@ -136,7 +164,7 @@
   <script>
     async function loadFootball() {
       const container = document.getElementById("football");
-      container.innerHTML = `<div class="card loading">Loading football matches...</div>`;
+      container.innerHTML = `<div class="card loading">Loading football data...</div>`;
 
       try {
         const res = await fetch("/api/football");
@@ -144,54 +172,49 @@
 
         container.innerHTML = "";
 
-        const matches =
+        const leagues =
           data.response ||
           data.data ||
-          data.matches ||
           data.result ||
           [];
 
-        if (!Array.isArray(matches) || matches.length === 0) {
+        if (!Array.isArray(leagues) || leagues.length === 0) {
           container.innerHTML = `
             <div class="card">
               <div class="tag">Football</div>
-              <div class="match-title">No football matches found</div>
-              <div class="status">API responded but returned no matches.</div>
+              <div class="match-title">No football data found</div>
+              <div class="status">API answered, but nothing came back.</div>
             </div>
           `;
           return;
         }
 
-        matches.slice(0, 8).forEach(match => {
-          const home =
-            match.home_name ||
-            match.homeTeam?.name ||
-            match.team1?.name ||
-            "Home";
-          const away =
-            match.away_name ||
-            match.awayTeam?.name ||
-            match.team2?.name ||
-            "Away";
-          const score =
-            match.score ||
-            `${match.homeScore ?? "-"} - ${match.awayScore ?? "-"}`;
-          const league =
-            match.league_name ||
-            match.league ||
-            "Football";
-          const status =
-            match.status ||
-            match.match_status ||
-            "Match";
+        leagues.slice(0, 8).forEach(item => {
+          const leagueName =
+            item.name ||
+            item.league_name ||
+            item.league?.name ||
+            "Football League";
+
+          const country =
+            item.country ||
+            item.country_name ||
+            item.area ||
+            "Country not shown";
+
+          const season =
+            item.season ||
+            item.currentSeason ||
+            item.year ||
+            "Season info not shown";
 
           const div = document.createElement("div");
           div.className = "card";
           div.innerHTML = `
-            <div class="tag">${league}</div>
-            <div class="match-title">${home} vs ${away}</div>
-            <div class="score">${score}</div>
-            <div class="status">${status}</div>
+            <div class="tag">Football</div>
+            <div class="match-title">${leagueName}</div>
+            <div class="status">${country}</div>
+            <div class="small">Season: ${season}</div>
           `;
           container.appendChild(div);
         });
@@ -200,8 +223,8 @@
         container.innerHTML = `
           <div class="card">
             <div class="tag">Football</div>
-            <div class="match-title">Could not load football matches</div>
-            <div class="status">API error or rate limit hit.</div>
+            <div class="match-title">Could not load football data</div>
+            <div class="status">API error or subscription issue.</div>
           </div>
         `;
       }
@@ -217,8 +240,13 @@
       const t1s1 = score.team1Score?.inngs1;
       const t2s1 = score.team2Score?.inngs1;
 
-      const team1Score = t1s1 ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})` : "Score not available";
-      const team2Score = t2s1 ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})` : "Score not available";
+      const team1Score = t1s1
+        ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})`
+        : "Score not available";
+
+      const team2Score = t2s1
+        ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})`
+        : "Score not available";
 
       return `
         <div class="card">
@@ -226,7 +254,7 @@
           <div class="match-title">${team1} vs ${team2}</div>
           <div class="score">${team1}: ${team1Score}</div>
           <div class="score">${team2}: ${team2Score}</div>
-          <div class="status">${info.status || info.state || "Recent / Upcoming"}</div>
+          <div class="status"><span class="pill">MATCH</span>${info.status || info.state || "Live / Recent"}</div>
           <div class="small">${info.seriesName || ""}</div>
         </div>
       `;
@@ -234,7 +262,7 @@
 
     async function loadCricket() {
       const container = document.getElementById("cricket");
-      container.innerHTML = `<div class="card loading">Loading cricket matches...</div>`;
+      container.innerHTML = `<div class="card loading">Loading cricket data...</div>`;
 
       try {
         const res = await fetch("/api/cricket");
@@ -246,7 +274,7 @@
           container.innerHTML = `
             <div class="card">
               <div class="tag">Cricket</div>
-              <div class="match-title">No cricket data available right now</div>
+              <div class="match-title">No cricket data available</div>
               <div class="status">Check back soon 🏏</div>
             </div>
           `;
@@ -255,7 +283,11 @@
 
         const allMatches = data.typeMatches
           .flatMap(type => type.seriesMatches || [])
-          .flatMap(series => (series.seriesAdWrapper && series.seriesAdWrapper.matches) ? series.seriesAdWrapper.matches : []);
+          .flatMap(series =>
+            series.seriesAdWrapper && series.seriesAdWrapper.matches
+              ? series.seriesAdWrapper.matches
+              : []
+          );
 
         const matchesToShow = allMatches.slice(0, 8);
 
@@ -263,8 +295,8 @@
           container.innerHTML = `
             <div class="card">
               <div class="tag">Cricket</div>
-              <div class="match-title">No cricket matches right now</div>
-              <div class="status">The API responded, but no matches were found.</div>
+              <div class="match-title">No cricket matches found</div>
+              <div class="status">API answered, but no matches were in the feed.</div>
             </div>
           `;
           return;
@@ -278,8 +310,8 @@
         container.innerHTML = `
           <div class="card">
             <div class="tag">Cricket</div>
-            <div class="match-title">Could not load cricket matches</div>
-            <div class="status">API error or rate limit hit. Try again in a bit.</div>
+            <div class="match-title">Could not load cricket data</div>
+            <div class="status">API error or subscription issue.</div>
           </div>
         `;
       }
