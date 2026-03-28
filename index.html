@@ -1,95 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WakaWakaHeyHey - Live IPL Scores</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WakaWakaHeyHey Sports Live</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
+    * {
+      box-sizing: border-box;
     }
 
-    header {
-      background: #ff6f00;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a 55%, #111827);
       color: white;
-      padding: 20px;
+    }
+
+    .topbar {
+      padding: 24px 18px;
       text-align: center;
-      font-size: 24px;
-      font-weight: bold;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      color: #22c55e;
+      font-size: 38px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-top: 8px;
+      font-size: 15px;
     }
 
     .container {
-      padding: 20px;
+      width: 92%;
+      max-width: 1000px;
+      margin: 28px auto 40px;
     }
 
-    .match {
-      background: white;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .league {
+      font-size: 26px;
+      color: #38bdf8;
+      font-weight: bold;
+      margin: 28px 0 14px;
+      text-align: center;
     }
 
-    .teams {
-      display: flex;
-      justify-content: space-between;
-      font-size: 18px;
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+    }
+
+    .match-title {
+      font-size: 21px;
+      font-weight: bold;
       margin-bottom: 10px;
+      color: #f8fafc;
+    }
+
+    .score {
+      font-size: 18px;
+      color: #facc15;
+      margin-bottom: 8px;
     }
 
     .status {
-      font-weight: bold;
-      color: red;
+      color: #cbd5e1;
+      font-size: 15px;
     }
 
-    .news {
-      margin-top: 30px;
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
+    .tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.08);
+      color: #93c5fd;
+    }
+
+    .ad-box {
+      margin-top: 24px;
+      padding: 18px;
+      text-align: center;
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 16px;
+      color: #94a3b8;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .footer {
+      text-align: center;
+      color: #64748b;
+      padding: 28px 16px 36px;
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      color: #cbd5e1;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 700px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      .league {
+        font-size: 22px;
+      }
+
+      .match-title {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="topbar">
+    <h1>⚽🏏 WakaWakaHeyHey Sports Live</h1>
+    <div class="subtitle">Live football, IPL scores, and match updates</div>
+  </div>
 
-<header>
-  🏏 WakaWakaHeyHey - Live IPL Scores
-</header>
-
-<div class="container">
-
-  <!-- LIVE MATCH -->
-  <div class="match">
-    <div class="status">LIVE</div>
-    <div class="teams">
-      <span>CSK - 178/4 (18.2)</span>
-      <span>MI - 150/6 (17.0)</span>
+  <div class="container">
+    <div class="league">⚽ Football Live</div>
+    <div id="football" class="grid">
+      <div class="card loading">Loading football matches...</div>
     </div>
-    <div>CSK leading by 28 runs</div>
-  </div>
 
-  <!-- UPCOMING MATCH -->
-  <div class="match">
-    <div class="status" style="color: green;">UPCOMING</div>
-    <div class="teams">
-      <span>RCB</span>
-      <span>KKR</span>
+    <div class="league">🏏 IPL / Cricket Live</div>
+    <div id="cricket" class="grid">
+      <div class="card loading">Loading cricket matches...</div>
     </div>
-    <div>Starts at 7:30 PM IST</div>
+
+    <div class="ad-box">
+      Advertisement space ready 💸
+    </div>
   </div>
 
-  <!-- NEWS -->
-  <div class="news">
-    <h3>🔥 Match News</h3>
-    <p>Dhoni finishes strong! CSK dominating the final overs.</p>
-    <p>RCB vs KKR expected to be a thriller tonight.</p>
+  <div class="footer">
+    WakaWakaHeyHey • live sports hub
   </div>
 
-</div>
+  <script>
+    const FOOTBALL_API_KEY = "2462e59935mshe59f5a9e55b0a81p1ce4b7jsn17169f4c8120";
+    const CRICKET_API_KEY = "2462e59935mshe59f5a9e55b0a81p1ce4b7jsn17169f4c8120";
 
+    async function loadFootball() {
+      const container = document.getElementById("football");
+      container.innerHTML = `<div class="card loading">Loading football matches...</div>`;
+
+      try {
+        const res = await fetch("https://api-football-v1.p.rapidapi.com/v3/fixtures?live=all", {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key": FOOTBALL_API_KEY,
+            "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+          }
+        });
+
+        const data = await res.json();
+        container.innerHTML = "";
+
+        if (!data.response || data.response.length === 0) {
+          container.innerHTML = `
+            <div class="card">
+              <div class="tag">Football</div>
+              <div class="match-title">No live football matches right now</div>
+              <div class="status">Check back soon ⚽</div>
+            </div>
+          `;
+          return;
+        }
+
+        data.response.slice(0, 8).forEach(match => {
+          const home = match.teams?.home?.name || "Home";
+          const away = match.teams?.away?.name || "Away";
+          const homeGoals = match.goals?.home ?? "-";
+          const awayGoals = match.goals?.away ?? "-";
+          const league = match.league?.name || "League";
+          const elapsed = match.fixture?.status?.elapsed ?? 0;
+          const status = match.fixture?.status?.short || "LIVE";
+
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <div class="tag">${league}</div>
+            <div class="match-title">${home} vs ${away}</div>
+            <div class="score">${homeGoals} - ${awayGoals}</div>
+            <div class="status">${status} • ${elapsed}'</div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Football API error:", err);
+        container.innerHTML = `
+          <div class="card">
+            <div class="tag">Football</div>
+            <div class="match-title">Could not load football matches</div>
+            <div class="status">API error or rate limit hit.</div>
+          </div>
+        `;
+      }
+    }
+
+    async function loadCricket() {
+      const container = document.getElementById("cricket");
+      container.innerHTML = `<div class="card loading">Loading cricket matches...</div>`;
+
+      try {
+        const res = await fetch("https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live", {
+          method: "GET",
+          headers: {
+            "X-RapidAPI-Key": CRICKET_API_KEY,
+            "X-RapidAPI-Host": "cricbuzz-cricket.p.rapidapi.com"
+          }
+        });
+
+        const data = await res.json();
+        container.innerHTML = "";
+
+        if (!data.typeMatches || data.typeMatches.length === 0) {
+          container.innerHTML = `
+            <div class="card">
+              <div class="tag">Cricket</div>
+              <div class="match-title">No live cricket matches right now</div>
+              <div class="status">Check back soon 🏏</div>
+            </div>
+          `;
+          return;
+        }
+
+        const allMatches = data.typeMatches
+          .flatMap(type => type.seriesMatches || [])
+          .flatMap(series => (series.seriesAdWrapper && series.seriesAdWrapper.matches) ? series.seriesAdWrapper.matches : []);
+
+        const liveMatches = allMatches.filter(match => {
+          const info = match.matchInfo || {};
+          return info.state === "In Progress" || info.state === "Complete" || info.status;
+        });
+
+        const matchesToShow = liveMatches.slice(0, 8);
+
+        if (matchesToShow.length === 0) {
+          container.innerHTML = `
+            <div class="card">
+              <div class="tag">Cricket</div>
+              <div class="match-title">No live cricket matches right now</div>
+              <div class="status">The API responded, but no in-progress matches were found.</div>
+            </div>
+          `;
+          return;
+        }
+
+        matchesToShow.forEach(match => {
+          const info = match.matchInfo || {};
+          const score = match.matchScore || {};
+
+          const team1 = info.team1?.teamName || "Team 1";
+          const team2 = info.team2?.teamName || "Team 2";
+
+          const t1s1 = score.team1Score?.inngs1;
+          const t1s2 = score.team1Score?.inngs2;
+          const t2s1 = score.team2Score?.inngs1;
+          const t2s2 = score.team2Score?.inngs2;
+
+          const team1Score = [
+            t1s1 ? `${t1s1.runs}/${t1s1.wickets} (${t1s1.overs})` : "",
+            t1s2 ? `${t1s2.runs}/${t1s2.wickets} (${t1s2.overs})` : ""
+          ].filter(Boolean).join(" & ");
+
+          const team2Score = [
+            t2s1 ? `${t2s1.runs}/${t2s1.wickets} (${t2s1.overs})` : "",
+            t2s2 ? `${t2s2.runs}/${t2s2.wickets} (${t2s2.overs})` : ""
+          ].filter(Boolean).join(" & ");
+
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <div class="tag">${info.matchFormat || "Cricket"}</div>
+            <div class="match-title">${team1} vs ${team2}</div>
+            <div class="score">${team1}: ${team1Score || "Score not available"}</div>
+            <div class="score">${team2}: ${team2Score || "Score not available"}</div>
+            <div class="status">${info.status || info.state || "Live"}</div>
+            <div class="small">${info.seriesName || ""}</div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Cricket API error:", err);
+        container.innerHTML = `
+          <div class="card">
+            <div class="tag">Cricket</div>
+            <div class="match-title">Could not load live cricket</div>
+            <div class="status">API error or rate limit hit. Try again in a bit.</div>
+          </div>
+        `;
+      }
+    }
+
+    loadFootball();
+    loadCricket();
+
+    setInterval(() => {
+      loadFootball();
+      loadCricket();
+    }, 15000);
+  </script>
 </body>
 </html>
